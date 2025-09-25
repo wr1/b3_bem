@@ -30,7 +30,7 @@ class B3BemRun:
         self.workdir.mkdir(parents=True, exist_ok=True)  # Ensure mesh directory exists
 
         bem = self.config["aero"]["bem"]
-        self.prefix = self.workdir / self.config["general"]["prefix"]
+        self.prefix = self.workdir / "bem"
 
         if bem["polars"] is None:
             exit("no polars in blade file")

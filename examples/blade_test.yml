@@ -1,7 +1,6 @@
 workdir: temp_blade
 
-general:
-  prefix: blade
+general: {}
 
 planform:
   element_size: 0.1
@@ -22,53 +21,16 @@ damage: {}
 
 aero:
   airfoils: []
-  # bem:
-  #   polars: null
-  #   B: 3
-  #   rho: 1.225
-  #   mu: 1.81e-5
-  #   precone: 0.0
-  #   tilt: 0.0
-  #   yaw: 0.0
-  #   shearExp: 0.2
-  #   hubHt: 90.0
-  #   max_tipspeed: 80.0
-  #   rated_power: 5000000.0
-  #   uinf: [4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 20.0]
-
   bem:
-    rated_power: 10000000
-    polars:
-      - key: 1.0
-        name: Cylinder
-        file: polars/Cylinder1.dat
-      - key: 0.21
-        name: DU21
-        file: polars/DU21_A17.dat
-      - key: 0.25
-        name: DU25
-        file: polars/DU25_A17.dat
-      - key: 0.30
-        name: DU30
-        file: polars/DU30_A17.dat
-      - key: 0.35
-        name: DU35
-        file: polars/DU35_A17.dat
-      - key: 0.40
-        name: DU40
-        file: polars/DU40_A17.dat
-      - key: 0.17
-        name: NACA64
-        file: polars/NACA64_A17.dat
+    polars: null
     B: 3
     rho: 1.225
-    mu: 0.0000181
-    precone: 0
-    tilt: 0
-    yaw: 0
+    mu: 1.81e-5
+    precone: 0.0
+    tilt: 0.0
+    yaw: 0.0
     shearExp: 0.2
-    hubHt: 90
-    max_tipspeed: 95
-    uinf: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26]
-
-
+    hubHt: 90.0
+    max_tipspeed: 80.0
+    rated_power: 5000000.0
+    uinf: [4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 20.0]
