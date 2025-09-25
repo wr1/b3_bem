@@ -19,7 +19,7 @@ class B3BemStep(Statesman):
         "ccblade_bladeloads.csv",
         "ccblade_moments.csv",
     ]
-    workdir_key = "general.workdir"
+    workdir_key = "workdir"
 
     def __init__(self, config_path, force=False):
         super().__init__(config_path)
@@ -38,7 +38,7 @@ class B3BemStep(Statesman):
         self.config = config_data.model_dump()
 
         # Set workdir relative to YAML file
-        self.workdir = Path(self.config_path).parent / self.config["general"]["workdir"]
+        self.workdir = Path(self.config_path).parent / self.config["workdir"]
         self.workdir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
 
         # Run B3 BEM analysis

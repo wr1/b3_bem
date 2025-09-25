@@ -23,7 +23,7 @@ class B3BemRun:
         self.yml_dir = yml_dir
 
         # Resolve workdir relative to YAML directory
-        workdir_path = Path(self.config["general"]["workdir"])
+        workdir_path = Path(self.config["workdir"])
         if not workdir_path.is_absolute():
             workdir_path = self.yml_dir / workdir_path
         self.workdir = workdir_path.resolve() / "mesh"

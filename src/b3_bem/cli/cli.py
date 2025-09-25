@@ -43,3 +43,8 @@ b3bem_cli.commands.append(
         arguments=[],
     )
 )
+
+
+def main():
+    """Main entry point for the CLI."""
+    b3bem_cli.run()

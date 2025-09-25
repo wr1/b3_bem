@@ -2,18 +2,19 @@ from pathlib import Path
 from ruamel.yaml import YAML
 from pydantic import BaseModel
 from typing import Any, Dict, List
-from ..geom_app.loft_utils import load
+from ..utils.loft_utils import load
 
 
 class Aero(BaseModel):
-    airfoils: Dict[float, List[List[float]]]
-    bem: Dict[str, Any]
+    airfoils: Dict[float, List[List[float]]] = {}
+    bem: Dict[str, Any] = {}
 
 
 class Config(BaseModel):
-    general: Dict[str, Any]
-    planform: Dict[str, Any]
-    aero: Aero
+    workdir: str = "temp"
+    general: Dict[str, Any] = {}
+    planform: Dict[str, Any] = {}
+    aero: Aero = Aero()
     mesh: Dict[str, Any] = {}
     mesh2d: Dict[str, Any] = {}
     materials: str = ""
