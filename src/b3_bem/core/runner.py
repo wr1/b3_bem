@@ -7,6 +7,7 @@ from ccblade.ccblade import CCBlade
 import os
 import logging
 from typing import List, Tuple, Dict, Optional, Any
+from scipy.interpolate import PchipInterpolator
 
 from ..utils.utils import load_polar, interpolate_polars
 from .optimizer import ControlOptimize
@@ -29,28 +30,47 @@ class B3BemRun:
         self.workdir = workdir_path.resolve() / "mesh"
         self.workdir.mkdir(parents=True, exist_ok=True)  # Ensure mesh directory exists
 
-        bem = self.config["aero"]["bem"]
-        self.prefix = self.workdir / "bem"
+        bem = self.config["bem"]
+        planform = self.config["geometry"]["planform"]
+
+        # Interpolate planform control points using PCHIP
+        n_span = 50
+        s_span = np.linspace(0, 1, n_span)
+        rtip = 60.0  # Assume rtip
+        rhub = 1.0
+        r = s_span * (rtip - rhub) + rhub
+
+        # Chord interpolation
+        s_chord = np.array([p[0] for p in planform["chord"]])
+        chord_vals = np.array([p[1] for p in planform["chord"]])
+        interp_chord = PchipInterpolator(s_chord, chord_vals)
+        chord = interp_chord(s_span)
+
+        # Twist interpolation
+        s_twist = np.array([p[0] for p in planform["twist"]])
+        twist_vals = np.array([p[1] for p in planform["twist"]])
+        interp_twist = PchipInterpolator(s_twist, twist_vals)
+        twist = interp_twist(s_span)
+
+        # Thickness interpolation
+        s_thickness = np.array([p[0] for p in planform["thickness"]])
+        thickness_vals = np.array([p[1] for p in planform["thickness"]])
+        interp_thickness = PchipInterpolator(s_thickness, thickness_vals)
+        relative_thickness = interp_thickness(s_span)
 
         if bem["polars"] is None:
             exit("no polars in blade file")
-        if not os.path.isfile(self.prefix.with_suffix(".pck")):
-            exit("blade not built yet, run b3p build <blade.yml> first")
-        plf = pd.read_csv(
-            self.prefix.with_name(self.prefix.stem + "_sca_50.csv"), sep=";"
-        )
         plrs = sorted(
             [(i['key'], load_polar(yml_dir / Path(i['file']))) for i in bem["polars"]],
             reverse=True,
         )
         iplr = interpolate_polars(
-            plrs, plf.relative_thickness, of=self.workdir.parent / "polars.png"
+            plrs, relative_thickness, of=self.workdir.parent / "polars.png"
         )
-        rhub, rtip = plf.z.iloc[0], plf.z.iloc[-1]
         self.rotor = CCBlade(
-            plf.z - plf.z[0],
-            plf.chord,
-            plf.twist,
+            r - r[0],
+            chord,
+            twist,
             iplr,
             rhub,
             rtip,

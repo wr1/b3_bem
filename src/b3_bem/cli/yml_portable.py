@@ -7,14 +7,15 @@ from ..utils.loft_utils import load
 
 class Aero(BaseModel):
     airfoils: Dict[float, List[List[float]]] = {}
-    bem: Dict[str, Any] = {}
 
 
 class Config(BaseModel):
     workdir: str = "temp"
     general: Dict[str, Any] = {}
-    planform: Dict[str, Any] = {}
+    geometry: Dict[str, Any] = {}
+    airfoils: List[Dict[str, Any]] = []
     aero: Aero = Aero()
+    bem: Dict[str, Any] = {}
     mesh: Dict[str, Any] = {}
     mesh2d: Dict[str, Any] = {}
     materials: str = ""
@@ -39,8 +40,8 @@ def yaml_make_portable(path: Path):
     with open(path) as f:
         data = yaml.load(f)
     yml_dir = path.parent
-    if 'aero' in data and 'airfoils' in data['aero']:
-        data['aero']['airfoils'] = load_airfoils(data['aero']['airfoils'], yml_dir)
+    if 'airfoils' in data:
+        data['aero'] = {'airfoils': load_airfoils(data['airfoils'], yml_dir)}
     config = Config(**data)
     return config
 
