@@ -27,9 +27,9 @@ class Config(BaseModel):
 def load_airfoils(afs, yml_dir):
     airfoils = {}
     for item in afs:
-        key = item['key']
-        if 'file' in item:
-            airfoils[key] = load(yml_dir / item['file'])
+        key = item['thickness']
+        if 'path' in item:
+            airfoils[key] = load(yml_dir / item['path'])
         else:
             airfoils[key] = item['xy']
     return airfoils

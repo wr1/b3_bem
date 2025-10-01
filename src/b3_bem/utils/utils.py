@@ -51,7 +51,7 @@ def interpolate_polars(
         [
             [
                 np.interp(
-                    np.flip(tnew.values),
+                    np.flip(tnew),
                     np.flip(t),
                     np.flip([polar[1][i][idx] for polar in polars]),
                 )

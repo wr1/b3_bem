@@ -4,6 +4,12 @@
 from pathlib import Path
 from treeparse import cli, command, option
 from ..core.step import B3BemStep
+import logging
+import sys
+from rich.logging import RichHandler
+
+# Configure logging with Rich formatting, no timestamps
+logging.basicConfig(level=logging.INFO, handlers=[RichHandler(show_time=False)], format='%(message)s')
 
 
 # Treeparse CLI for b3_bem
