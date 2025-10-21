@@ -107,6 +107,7 @@ class B3BemRun:
     def run(self) -> None:
         """Execute the B3 BEM analysis."""
         results = self.copt.optimize_all()
+        logger.info(f"Number of evaluations per operating point: {[r[9] for r in results]}")
         self.copt.compute_bladeloads(results)
         # Prepare output dict
         output = {

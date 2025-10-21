@@ -2,7 +2,6 @@ from pathlib import Path
 from ruamel.yaml import YAML
 from pydantic import BaseModel
 from typing import Any, Dict, List
-import contextlib
 
 
 class Config(BaseModel):
