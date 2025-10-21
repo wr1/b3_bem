@@ -48,10 +48,10 @@ def plot_interpolated_polars(
         ax[0].set_ylabel("Cl")
         ax[1].set_ylabel("Cd")
         ax[2].set_ylabel("Cm")
-        ax[0].legend()
         ax[0].grid()
         ax[1].grid()
         ax[2].grid()
+    fig.tight_layout()
     fig.savefig(of)
 
 
@@ -101,6 +101,8 @@ def plot_bladeloads(
         axs[idx].set_title(name)
         axs[idx].legend()
         axs[idx].grid()
+    handles, labels = axs[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=len(labels))
     fig.tight_layout()
     fig.savefig(of)
     logger.info(f"Saved {of}")
@@ -146,7 +148,7 @@ def plot_moments(
     axs[2].grid()
     fig.tight_layout()
     fig.savefig(of)
-    logger.info(f"Saved {of}")
+    logger.info(f"saved {of}")
 
 
 def rotorplot(
