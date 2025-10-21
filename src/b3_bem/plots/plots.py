@@ -2,13 +2,37 @@
 
 from pathlib import Path
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
 import math
 import logging
 from typing import List, Tuple, Dict, Optional, Any
 
 logger = logging.getLogger(__name__)
+
+
+def plot_planform(r, chord, twist, thickness, of: Path = Path("ccblade_planform.png")) -> None:
+    """Plot planform data: chord, twist, thickness, radius."""
+    fig, axs = plt.subplots(2, 2, figsize=(15, 10))
+    axs[0, 0].plot(r, chord)
+    axs[0, 0].set_title('Chord (m)')
+    axs[0, 0].set_xlabel('r (m)')
+    axs[0, 0].grid()
+    axs[0, 1].plot(r, twist)
+    axs[0, 1].set_title('Twist (deg)')
+    axs[0, 1].set_xlabel('r (m)')
+    axs[0, 1].grid()
+    axs[1, 0].plot(r, thickness)
+    axs[1, 0].set_title('Relative Thickness')
+    axs[1, 0].set_xlabel('r (m)')
+    axs[1, 0].grid()
+    axs[1, 1].plot(r, r)
+    axs[1, 1].set_title('Radius (m)')
+    axs[1, 1].set_xlabel('r (m)')
+    axs[1, 1].grid()
+    fig.tight_layout()
+    fig.savefig(of)
+    plt.close(fig)
+    logger.info(f"Saved {of}")
 
 
 def plot_interpolated_polars(
@@ -129,17 +153,62 @@ def rotorplot(
     op: Dict[str, Any],
     uinf: np.ndarray,
     labels: List[str] = ["P", "CP", "T", "Mb"],
+    Uinf_low: Optional[float] = None,
+    Uinf_high: Optional[float] = None,
+    Uinf_switch: Optional[float] = None,
     of: Path = Path("__temp.png"),
 ) -> None:
     """Plot rotor performance data against wind speeds."""
     lab = [i for i in labels if i in op]
-    fig, ax = plot_grid(len(lab), figsize=(15, 15))
+    fig, axs = plot_grid(len(lab), figsize=(15, 15))
     for n, i in enumerate(lab):
-        ax[n].plot(uinf, op[i], label=f"{i} max={op[i].max():.2f}")
-        ax[n].legend()
-        ax[n].grid()
-        ax[n].set_ylabel(i + "(W)" if i == "P" else "")
-        ax[n].set_xlabel("uinf [m/s]")
+        axs[n].plot(uinf, op[i], label=f"{i} max={np.array(op[i]).max():.2f}", marker='o', alpha=0.5)
+        axs[n].legend()
+        axs[n].grid()
+        if i == "P":
+            axs[n].set_ylabel("P (W)")
+        elif i == "CP":
+            axs[n].set_ylabel("CP")
+        elif i == "T":
+            axs[n].set_ylabel("T (N)")
+        elif i == "Mb":
+            axs[n].set_ylabel("Mb (Nm)")
+        elif i == "omega":
+            axs[n].set_ylabel("Omega (RPM)")
+        elif i == "pitch":
+            axs[n].set_ylabel("Pitch (deg)")
+        elif i == "tsr":
+            axs[n].set_ylabel("TSR")
+        elif i == "tip_speed":
+            axs[n].set_ylabel("Tip Speed (m/s)")
+        axs[n].set_xlabel("uinf [m/s]")
+    # Add regime backgrounds
+    if Uinf_low is not None and Uinf_high is not None and Uinf_switch is not None:
+        for ax in axs[:len(lab)]:
+            if Uinf_low > uinf.min():
+                ax.axvspan(0, Uinf_low, alpha=0.25, color="lightblue", label="Min Speed")
+            ax.axvspan(
+                max(0, Uinf_low), Uinf_high, alpha=0.25, color="lightgreen", label="Opt Speed"
+            )
+            if Uinf_switch > Uinf_high:
+                ax.axvspan(
+                    Uinf_high, Uinf_switch, alpha=0.25, color="orange", label="Max Speed"
+                )
+                ax.axvspan(
+                    Uinf_switch,
+                    uinf.max(),
+                    alpha=0.25,
+                    color="lightcoral",
+                    label="Max Power",
+                )
+            else:
+                ax.axvspan(
+                    Uinf_high,
+                    uinf.max(),
+                    alpha=0.25,
+                    color="lightcoral",
+                    label="Max Speed/Max Power",
+                )
     fig.tight_layout()
     fig.savefig(of)
     logger.info(f"saved {of}")

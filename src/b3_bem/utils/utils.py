@@ -2,11 +2,10 @@
 
 from pathlib import Path
 import numpy as np
-import pandas as pd
 from ccblade.ccblade import CCAirfoil
 import os
 import logging
-from typing import List, Tuple, Dict, Optional, Any
+from typing import List, Tuple, Optional
 
 logger = logging.getLogger(__name__)
 
