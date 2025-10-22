@@ -30,6 +30,7 @@ class ControlOptimize:
         rating: float,
         uinf: np.ndarray,
         workdir: Path,
+        serial: bool = False,
     ):
         """Initialize control optimizer with rotor parameters."""
         self.rotor = rotor
@@ -38,6 +39,7 @@ class ControlOptimize:
         self.uinf = uinf
         self.rtip = rtip
         self.workdir = workdir
+        self.serial = serial
         self.omega_min = 2  # RPM, adjust as needed
         self.omega_max = self.max_tipspeed * 60 / (2 * np.pi * self.rtip)  # RPM
         self.pitch_min = -1.5
@@ -189,19 +191,22 @@ class ControlOptimize:
         return Uinf, zone, Omega, pitch, P, T, CT, CP, Mb, niter
 
     def optimize_all(self):
-        """Run optimization for all wind speeds using multiprocessing."""
+        """Run optimization for all wind speeds using multiprocessing or serial."""
         self.initialize_optimal()
-        with Progress() as progress:
-            task = progress.add_task("Optimizing operating points...", total=len(self.uinf))
-            results = []
-            with mp.Pool() as pool:
-                for result in pool.imap(self.process_Uinf, self.uinf):
-                    results.append(result)
-                    progress.update(task, advance=1)
+        if self.serial:
+            results = [self.process_Uinf(u) for u in self.uinf]
+        else:
+            with Progress() as progress:
+                task = progress.add_task("Optimizing operating points...", total=len(self.uinf))
+                results = []
+                with mp.Pool() as pool:
+                    for result in pool.imap(self.process_Uinf, self.uinf):
+                        results.append(result)
+                        progress.update(task, advance=1)
         return results
 
     def compute_bladeloads(self, results):
-        """Compute and plot blade loads for all operating points."""
+        """Compute and return blade loads and moments data."""
         loads_list = []
         uinf_list = []
         flapwise_moments = []
@@ -219,29 +224,13 @@ class ControlOptimize:
             moment_edge = np.trapz(Tp * r, r)
             flapwise_moments.append(moment_flap)
             edgewise_moments.append(moment_edge)
-        plot_bladeloads(self.rotor.r, loads_list, uinf_list, of=self.workdir.parent / "ccblade_bladeloads.png")
-        # Save table output
-        all_loads = {}
-        for ui, loads in zip(uinf_list, loads_list):
-            ui_str = f"{ui:.1f}"
-            for key, arr in loads.items():
-                if key in ['Np', 'Tp']:
-                    col_name = f"{key}_{ui_str}"
-                    all_loads[col_name] = arr
-        df_all = pd.DataFrame(all_loads, index=self.rotor.r)
-        df_all.index.name = 'r'
-        df_all.to_csv(self.workdir.parent / "ccblade_bladeloads.csv")
-        logger.info(f"Saved blade loads to {self.workdir.parent / 'ccblade_bladeloads.csv'}")
-        # Save moments
         combined_rms = np.sqrt(np.array(flapwise_moments)**2 + np.array(edgewise_moments)**2)
-        moments_dict = {
-            'uinf': uinf_list,
-            'flapwise_moment': flapwise_moments,
-            'edgewise_moment': edgewise_moments,
-            'combined_rms': combined_rms
+        blade_data = {
+            'r': r.tolist(),
+            'loads_list': [{k: v.tolist() for k, v in load.items()} for load in loads_list],
+            'uinf_list': uinf_list,
+            'flapwise_moments': [float(m) for m in flapwise_moments],
+            'edgewise_moments': [float(m) for m in edgewise_moments],
+            'combined_rms': combined_rms.tolist()
         }
-        df_moments = pd.DataFrame(moments_dict)
-        df_moments.to_csv(self.workdir.parent / "ccblade_moments.csv", index=False)
-        logger.info(f"Saved moments to {self.workdir.parent / 'ccblade_moments.csv'}")
-        # Plot moments
-        plot_moments(self.rotor.r, loads_list, uinf_list, {'flapwise': np.array(flapwise_moments), 'edgewise': np.array(edgewise_moments), 'combined_rms': combined_rms}, of=self.workdir.parent / "ccblade_moments.png")
+        return blade_data

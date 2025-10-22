@@ -13,11 +13,9 @@ logger = logging.getLogger(__name__)
 class B3BemStep(Statesman):
     """Statesman step for running B3 BEM analysis."""
 
-    dependent_sections = ["general","planform", "aero"]
+    dependent_sections = ["general", "planform", "bem"]
     output_files = [
-        "ccblade_output.csv",
-        "ccblade_bladeloads.csv",
-        "ccblade_moments.csv",
+        "results.json",
     ]
     workdir_key = "workdir"
 

@@ -25,3 +25,6 @@ dependencies = [
 
 [project.scripts]
 "b3-bem" = "b3_bem.cli.cli:main"
+
+[tool.pytest.ini_options]
+addopts = "--cov=src/b3_bem --cov-report=term"

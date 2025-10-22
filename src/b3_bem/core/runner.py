@@ -3,6 +3,7 @@
 from pathlib import Path
 import numpy as np
 import pandas as pd
+import json
 from ccblade.ccblade import CCBlade
 import logging
 from scipy.interpolate import PchipInterpolator
@@ -12,6 +13,20 @@ from ..plots.plots import plot_planform
 from .optimizer import ControlOptimize
 
 logger = logging.getLogger(__name__)
+
+
+def convert_to_serializable(obj):
+    """Convert numpy types to Python serializable types."""
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, (np.integer, np.floating)):
+        return obj.item()
+    elif isinstance(obj, dict):
+        return {k: convert_to_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_to_serializable(item) for item in obj]
+    else:
+        return obj
 
 
 class B3BemRun:
@@ -65,8 +80,28 @@ class B3BemRun:
         rhub = r[0]
         rtip = r[-1]
 
+        # Control points for plotting
+        r_chord = np.abs(interp_z(s_chord))
+        r_twist = np.abs(interp_z(s_twist))
+        r_thickness = np.abs(interp_z(s_thickness))
+        r_z = np.abs(z_vals)
+        control_points = {
+            'chord': (r_chord, chord_vals),
+            'twist': (r_twist, twist_vals),
+            'thickness': (r_thickness, thickness_vals),
+            'r': (r_z, r_z)
+        }
+
+        # Store planform data for output
+        self.planform_data = {
+            'r': r.tolist(),
+            'chord': chord.tolist(),
+            'twist': twist.tolist(),
+            'thickness': relative_thickness.tolist()
+        }
+
         # Plot planform
-        plot_planform(r, chord, twist, relative_thickness, self.workdir.parent / "ccblade_planform.png")
+        plot_planform(r, chord, twist, relative_thickness, self.workdir.parent / "ccblade_planform.png", control_points)
 
         if bem["polars"] is None:
             exit("no polars in blade file")
@@ -108,7 +143,7 @@ class B3BemRun:
         """Execute the B3 BEM analysis."""
         results = self.copt.optimize_all()
         logger.info(f"Number of evaluations per operating point: {[r[9] for r in results]}")
-        self.copt.compute_bladeloads(results)
+        blade_data = self.copt.compute_bladeloads(results)
         # Prepare output dict
         output = {
             'uinf': [r[0] for r in results],
@@ -126,15 +161,27 @@ class B3BemRun:
         output['tsr'] = [(omega * 2 * np.pi / 60) * self.copt.rtip / uinf for omega, uinf in zip(output['omega'], output['uinf'])]
         # Add tip speed
         output['tip_speed'] = [omega * 2 * np.pi / 60 * self.copt.rtip for omega in output['omega']]
-        df = pd.DataFrame(output)
-        df.to_csv(self.workdir.parent / "ccblade_output.csv", sep=";")
-        from ..plots.plots import rotorplot
-        rotorplot(
-            output,
-            np.array(output['uinf']),
-            labels=["P", "CP", "T", "Mb", "omega", "pitch", "tsr", "tip_speed"],
-            Uinf_low=self.copt.Uinf_low,
-            Uinf_high=self.copt.Uinf_high,
-            Uinf_switch=self.copt.Uinf_switch,
-            of=self.workdir.parent / "ccblade_out.png",
-        )
+        
+        # Collect all data
+        results_data = {
+            "config": self.config,
+            "planform": self.planform_data,
+            "performance": output,
+            "blade_loads": blade_data,
+            "metadata": {
+                "timestamp": str(pd.Timestamp.now()),
+                "niter_list": [int(r[9]) for r in results],
+                "Uinf_low": float(self.copt.Uinf_low) if self.copt.Uinf_low is not None else None,
+                "Uinf_high": float(self.copt.Uinf_high) if self.copt.Uinf_high is not None else None,
+                "Uinf_switch": float(self.copt.Uinf_switch) if self.copt.Uinf_switch is not None else None
+            }
+        }
+        
+        # Convert to serializable
+        results_data = convert_to_serializable(results_data)
+        
+        # Save to JSON
+        output_path = self.workdir.parent / "results.json"
+        with open(output_path, "w") as f:
+            json.dump(results_data, f, indent=4)
+        logger.info(f"Saved results to {output_path}")

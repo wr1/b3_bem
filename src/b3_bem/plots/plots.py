@@ -10,25 +10,37 @@ from typing import List, Tuple, Dict, Optional, Any
 logger = logging.getLogger(__name__)
 
 
-def plot_planform(r, chord, twist, thickness, of: Path = Path("ccblade_planform.png")) -> None:
+def plot_planform(r, chord, twist, thickness, of: Path = Path("ccblade_planform.png"), control_points: Optional[Dict[str, Tuple[np.ndarray, np.ndarray]]] = None) -> None:
     """Plot planform data: chord, twist, thickness, radius."""
     fig, axs = plt.subplots(2, 2, figsize=(15, 10))
     axs[0, 0].plot(r, chord)
     axs[0, 0].set_title('Chord (m)')
     axs[0, 0].set_xlabel('r (m)')
     axs[0, 0].grid()
+    if control_points and 'chord' in control_points:
+        r_pts, vals = control_points['chord']
+        axs[0, 0].scatter(r_pts, vals, color='red', marker='o', s=20)
     axs[0, 1].plot(r, twist)
     axs[0, 1].set_title('Twist (deg)')
     axs[0, 1].set_xlabel('r (m)')
     axs[0, 1].grid()
+    if control_points and 'twist' in control_points:
+        r_pts, vals = control_points['twist']
+        axs[0, 1].scatter(r_pts, vals, color='red', marker='o', s=20)
     axs[1, 0].plot(r, thickness)
     axs[1, 0].set_title('Relative Thickness')
     axs[1, 0].set_xlabel('r (m)')
     axs[1, 0].grid()
+    if control_points and 'thickness' in control_points:
+        r_pts, vals = control_points['thickness']
+        axs[1, 0].scatter(r_pts, vals, color='red', marker='o', s=20)
     axs[1, 1].plot(r, r)
     axs[1, 1].set_title('Radius (m)')
     axs[1, 1].set_xlabel('r (m)')
     axs[1, 1].grid()
+    if control_points and 'r' in control_points:
+        r_pts, vals = control_points['r']
+        axs[1, 1].scatter(r_pts, vals, color='red', marker='o', s=20)
     fig.tight_layout()
     fig.savefig(of)
     plt.close(fig)
@@ -99,7 +111,6 @@ def plot_bladeloads(
         for i, load_dict in enumerate(loads_list):
             axs[idx].plot(r, load_dict[name], label=f"uinf={uinf_list[i]:.1f}")
         axs[idx].set_title(name)
-        axs[idx].legend()
         axs[idx].grid()
     handles, labels = axs[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=len(labels))
