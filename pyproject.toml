@@ -1,27 +1,26 @@
 [build-system]
-requires = ["hatchling"]
 build-backend = "hatchling.build"
+requires = ["hatchling"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [project]
+dependencies = [
+  "numpy",
+  "pandas",
+  "matplotlib",
+  "scipy",
+  "CCBlade", # "ccblade @ file:///home/wr1/projects/CCBlade",
+  "rich",
+  "statesman @ git+https://github.com/wr1/statesman.git",
+  "treeparse",
+  "ruamel.yaml",
+  "pydantic",
+  "pytest",
+]
 name = "b3_bem"
 version = "0.1.0"
-dependencies = [
-    "numpy",
-    "pandas",
-    "matplotlib",
-    "scipy",
-    "CCBlade",
-    # "ccblade @ file:///home/wr1/projects/CCBlade",
-    "rich",
-    "statesman @ git+https://github.com/wr1/projects/statesman.git",
-    "treeparse",
-    "ruamel.yaml",
-    "pydantic",
-    "pytest",
-]
 
 [project.scripts]
 "b3-bem" = "b3_bem.cli.cli:main"
