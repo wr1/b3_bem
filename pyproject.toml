@@ -20,7 +20,7 @@ dependencies = [
   "pytest",
 ]
 name = "b3_bem"
-version = "0.1.0"
+version = "0.1.1"
 
 [project.scripts]
 "b3-bem" = "b3_bem.cli.cli:main"
