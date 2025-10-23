@@ -3,7 +3,9 @@
 from pathlib import Path
 import json
 import numpy as np
-from .plots import plot_planform, rotorplot, plot_bladeloads, plot_moments
+from .planform import plot_planform
+from .rotor import rotorplot
+from .bladeloads import plot_bladeloads, plot_moments
 
 
 class B3BemPlotter:

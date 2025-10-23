@@ -9,7 +9,7 @@ import logging
 from scipy.interpolate import PchipInterpolator
 
 from ..utils.utils import load_polar, interpolate_polars
-from ..plots.plots import plot_planform
+from ..plots.planform import plot_planform
 from .optimizer import ControlOptimize
 
 logger = logging.getLogger(__name__)
