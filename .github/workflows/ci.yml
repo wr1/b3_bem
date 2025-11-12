@@ -23,6 +23,11 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ninja-build
 
+    - name: Run ruff check
+      run: |
+        pip install ruff
+        ruff check src/ tests/ pyproject.toml README.md examples/ resources/
+
     - name: Install CCBlade
       run: |
         python resources/ccblade_install.py
@@ -30,11 +35,6 @@ jobs:
     - name: Install project
       run: |
         pip install -e .
-
-    - name: Run ruff check
-      run: |
-        pip install ruff
-        ruff check
 
     - name: Run tests with coverage
       run: |
