@@ -17,7 +17,6 @@ dependencies = [
     # "ccblade @ file:///home/wr1/projects/CCBlade",
     "rich",
     # "statesman",
-    "statesman @ git+https://github.com/wr1/projects/statesman.git",
     "treeparse",
     "ruamel.yaml",
     "pydantic",

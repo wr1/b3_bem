@@ -86,27 +86,34 @@ class B3BemRun:
         r_thickness = np.abs(interp_z(s_thickness))
         r_z = np.abs(z_vals)
         control_points = {
-            'chord': (r_chord, chord_vals),
-            'twist': (r_twist, twist_vals),
-            'thickness': (r_thickness, thickness_vals),
-            'r': (r_z, r_z)
+            "chord": (r_chord, chord_vals),
+            "twist": (r_twist, twist_vals),
+            "thickness": (r_thickness, thickness_vals),
+            "r": (r_z, r_z),
         }
 
         # Store planform data for output
         self.planform_data = {
-            'r': r.tolist(),
-            'chord': chord.tolist(),
-            'twist': twist.tolist(),
-            'thickness': relative_thickness.tolist()
+            "r": r.tolist(),
+            "chord": chord.tolist(),
+            "twist": twist.tolist(),
+            "thickness": relative_thickness.tolist(),
         }
 
         # Plot planform
-        plot_planform(r, chord, twist, relative_thickness, self.workdir.parent / "ccblade_planform.png", control_points)
+        plot_planform(
+            r,
+            chord,
+            twist,
+            relative_thickness,
+            self.workdir.parent / "ccblade_planform.png",
+            control_points,
+        )
 
         if bem["polars"] is None:
             exit("no polars in blade file")
         plrs = sorted(
-            [(i['key'], load_polar(yml_dir / Path(i['file']))) for i in bem["polars"]],
+            [(i["key"], load_polar(yml_dir / Path(i["file"]))) for i in bem["polars"]],
             reverse=True,
         )
         iplr = interpolate_polars(
@@ -142,26 +149,33 @@ class B3BemRun:
     def run(self) -> None:
         """Execute the B3 BEM analysis."""
         results = self.copt.optimize_all()
-        logger.info(f"Number of evaluations per operating point: {[r[9] for r in results]}")
+        logger.info(
+            f"Number of evaluations per operating point: {[r[9] for r in results]}"
+        )
         blade_data = self.copt.compute_bladeloads(results)
         # Prepare output dict
         output = {
-            'uinf': [r[0] for r in results],
-            'zone': [r[1] for r in results],
-            'omega': [r[2] for r in results],
-            'pitch': [r[3] for r in results],
-            'P': [r[4] for r in results],
-            'T': [r[5] for r in results],
-            'CT': [r[6] for r in results],
-            'CP': [r[7] for r in results],
-            'Mb': [r[8] for r in results],
-            'niter': [r[9] for r in results],
+            "uinf": [r[0] for r in results],
+            "zone": [r[1] for r in results],
+            "omega": [r[2] for r in results],
+            "pitch": [r[3] for r in results],
+            "P": [r[4] for r in results],
+            "T": [r[5] for r in results],
+            "CT": [r[6] for r in results],
+            "CP": [r[7] for r in results],
+            "Mb": [r[8] for r in results],
+            "niter": [r[9] for r in results],
         }
         # Add TSR
-        output['tsr'] = [(omega * 2 * np.pi / 60) * self.copt.rtip / uinf for omega, uinf in zip(output['omega'], output['uinf'])]
+        output["tsr"] = [
+            (omega * 2 * np.pi / 60) * self.copt.rtip / uinf
+            for omega, uinf in zip(output["omega"], output["uinf"])
+        ]
         # Add tip speed
-        output['tip_speed'] = [omega * 2 * np.pi / 60 * self.copt.rtip for omega in output['omega']]
-        
+        output["tip_speed"] = [
+            omega * 2 * np.pi / 60 * self.copt.rtip for omega in output["omega"]
+        ]
+
         # Collect all data
         results_data = {
             "config": self.config,
@@ -171,15 +185,21 @@ class B3BemRun:
             "metadata": {
                 "timestamp": str(pd.Timestamp.now()),
                 "niter_list": [int(r[9]) for r in results],
-                "Uinf_low": float(self.copt.Uinf_low) if self.copt.Uinf_low is not None else None,
-                "Uinf_high": float(self.copt.Uinf_high) if self.copt.Uinf_high is not None else None,
-                "Uinf_switch": float(self.copt.Uinf_switch) if self.copt.Uinf_switch is not None else None
-            }
+                "Uinf_low": float(self.copt.Uinf_low)
+                if self.copt.Uinf_low is not None
+                else None,
+                "Uinf_high": float(self.copt.Uinf_high)
+                if self.copt.Uinf_high is not None
+                else None,
+                "Uinf_switch": float(self.copt.Uinf_switch)
+                if self.copt.Uinf_switch is not None
+                else None,
+            },
         }
-        
+
         # Convert to serializable
         results_data = convert_to_serializable(results_data)
-        
+
         # Save to JSON
         output_path = self.workdir.parent / "results.json"
         with open(output_path, "w") as f:

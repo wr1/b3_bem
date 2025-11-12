@@ -19,7 +19,7 @@ general: {}
 geometry: {}
 bem: {}
 """
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False) as f:
         f.write(data)
         path = Path(f.name)
     config = yaml_make_portable(path)
@@ -30,7 +30,7 @@ bem: {}
 def test_save_yaml():
     """Test saving YAML config."""
     config = Config(workdir="test", general={}, geometry={}, bem={})
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False) as f:
         path = Path(f.name)
     save_yaml(path, config)
     # Reload and check

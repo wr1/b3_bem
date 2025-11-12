@@ -9,7 +9,9 @@ import logging
 from rich.logging import RichHandler
 
 # Configure logging with Rich formatting, no timestamps
-logging.basicConfig(level=logging.INFO, handlers=[RichHandler(show_time=False)], format='%(message)s')
+logging.basicConfig(
+    level=logging.INFO, handlers=[RichHandler(show_time=False)], format="%(message)s"
+)
 
 
 # Treeparse CLI for b3_bem

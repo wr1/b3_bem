@@ -71,6 +71,7 @@ def interpolate_polars(
     ]
     if of:
         from ..plots.plots import plot_polars, plot_interpolated_polars
+
         plot_polars(polars, of=of.with_name(of.stem + "_in" + of.suffix))
         plot_interpolated_polars(tnew, data, of=of)
     return output_polars

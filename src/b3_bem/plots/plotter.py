@@ -17,13 +17,18 @@ class B3BemPlotter:
         self.data["planform"]["r"] = np.array(self.data["planform"]["r"])
         self.data["planform"]["chord"] = np.array(self.data["planform"]["chord"])
         self.data["planform"]["twist"] = np.array(self.data["planform"]["twist"])
-        self.data["planform"]["thickness"] = np.array(self.data["planform"]["thickness"])
+        self.data["planform"]["thickness"] = np.array(
+            self.data["planform"]["thickness"]
+        )
         self.data["performance"]["uinf"] = np.array(self.data["performance"]["uinf"])
         self.data["blade_loads"]["r"] = np.array(self.data["blade_loads"]["r"])
-        self.data["blade_loads"]["combined_rms"] = np.array(self.data["blade_loads"]["combined_rms"])
+        self.data["blade_loads"]["combined_rms"] = np.array(
+            self.data["blade_loads"]["combined_rms"]
+        )
         # Convert loads_list back to dicts with arrays
         self.data["blade_loads"]["loads_list"] = [
-            {k: np.array(v) for k, v in load.items()} for load in self.data["blade_loads"]["loads_list"]
+            {k: np.array(v) for k, v in load.items()}
+            for load in self.data["blade_loads"]["loads_list"]
         ]
 
     def plot_planform(self, of: Path = Path("ccblade_planform.png")):
@@ -56,7 +61,7 @@ class B3BemPlotter:
         moments_dict = {
             "flapwise": np.array(bl["flapwise_moments"]),
             "edgewise": np.array(bl["edgewise_moments"]),
-            "combined_rms": bl["combined_rms"]
+            "combined_rms": bl["combined_rms"],
         }
         plot_moments(bl["r"], bl["loads_list"], bl["uinf_list"], moments_dict, of)
 

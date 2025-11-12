@@ -13,7 +13,7 @@ def test_load_polar():
 180 0.0 0.0 0.0
 EOT
 """
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.dat', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".dat", delete=False) as f:
         f.write(polar_data)
         path = Path(f.name)
     alpha, cl, cd, cm = load_polar(path)
