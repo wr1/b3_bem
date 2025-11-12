@@ -26,9 +26,9 @@ def run_b3bem_callback(yml: Path, force: bool = False, plot: bool = False):
         logging.info("Plots generated.")
 
 
-def plot_b3bem_callback(results: Path, output_dir: Path = Path(".")):
+def plot_b3bem_callback(results: Path, output_dir: Path = Path("."), run: str = None):
     """Callback for plotting B3 BEM results."""
-    plotter = B3BemPlotter(results)
+    plotter = B3BemPlotter(results, run_name=run)
     plotter.plot_all(output_dir)
 
 
@@ -58,8 +58,7 @@ b3bem_cli.commands.append(
                 arg_type=bool,
                 default=False,
                 help="Force run despite statesman",
-            ),
-            option(
+            ),           option(
                 flags=["--plot", "-p"],
                 arg_type=bool,
                 default=False,
@@ -87,6 +86,12 @@ b3bem_cli.commands.append(
                 arg_type=Path,
                 default=Path("."),
                 help="Output directory for plots",
+            ),
+            option(
+                flags=["--run"],
+                arg_type=str,
+                default=None,
+                help="Run name to plot (if multiple runs)",
             ),
         ],
     )

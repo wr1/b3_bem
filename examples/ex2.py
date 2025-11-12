@@ -101,6 +101,16 @@ config = {
         "hubHt": 120,
         "max_tipspeed": 95,
         "uinf": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20],
+        "runs": {
+            "opt": {"type": "optimal"},
+            "fixed": {
+                "type": "fixed_setpoints",
+                "setpoints": [
+                    {"wind_speed": 7, "rpm": 7, "pitch": 0},
+                    {"wind_speed": 12, "rpm": 7, "pitch": 3},
+                ],
+            },
+        },
     },
 }
 
@@ -116,9 +126,9 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False) as f:
 step = B3BemStep(config_path, force=True)
 step.run()
 
-# Generate plots
+# Generate plots for optimal run
 results_path = Path(config_path).parent / step.config["workdir"] / "results.json"
-plotter = B3BemPlotter(results_path)
+plotter = B3BemPlotter(results_path, run_name="opt")
 plotter.plot_all(Path(config_path).parent / step.config["workdir"])
 
 logging.info("B3 BEM analysis and plotting completed with programmatic config.")

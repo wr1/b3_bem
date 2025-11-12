@@ -106,6 +106,6 @@ def test_b3bem_run_run():
         mock_json_dump.assert_called_once()
         args, kwargs = mock_json_dump.call_args
         data = args[0]
-        assert "performance" in data
-        assert "blade_loads" in data
-        assert "metadata" in data
+        assert "performance" in data["runs"]["default"]
+        assert "blade_loads" in data["runs"]["default"]
+        assert "metadata" in data["runs"]["default"]

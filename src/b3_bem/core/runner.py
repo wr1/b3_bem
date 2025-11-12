@@ -11,6 +11,7 @@ from scipy.interpolate import PchipInterpolator
 from ..utils.utils import load_polar, interpolate_polars
 from ..plots.plots import plot_planform
 from .optimizer import ControlOptimize
+from .fixed import FixedRun
 
 logger = logging.getLogger(__name__)
 
@@ -145,57 +146,102 @@ class B3BemRun:
             uinf=np.array(bem["uinf"]),
             workdir=self.workdir,
         )
+        self.rtip = rtip
 
     def run(self) -> None:
         """Execute the B3 BEM analysis."""
-        results = self.copt.optimize_all()
-        logger.info(
-            f"Number of evaluations per operating point: {[r[9] for r in results]}"
-        )
-        blade_data = self.copt.compute_bladeloads(results)
-        # Prepare output dict
-        output = {
-            "uinf": [r[0] for r in results],
-            "zone": [r[1] for r in results],
-            "omega": [r[2] for r in results],
-            "pitch": [r[3] for r in results],
-            "P": [r[4] for r in results],
-            "T": [r[5] for r in results],
-            "CT": [r[6] for r in results],
-            "CP": [r[7] for r in results],
-            "Mb": [r[8] for r in results],
-            "niter": [r[9] for r in results],
-        }
-        # Add TSR
-        output["tsr"] = [
-            (omega * 2 * np.pi / 60) * self.copt.rtip / uinf
-            for omega, uinf in zip(output["omega"], output["uinf"])
-        ]
-        # Add tip speed
-        output["tip_speed"] = [
-            omega * 2 * np.pi / 60 * self.copt.rtip for omega in output["omega"]
-        ]
-
-        # Collect all data
+        bem = self.config["bem"]
+        runs = bem.get("runs", {"default": {"type": "optimal"}})
         results_data = {
             "config": self.config,
             "planform": self.planform_data,
-            "performance": output,
-            "blade_loads": blade_data,
-            "metadata": {
-                "timestamp": str(pd.Timestamp.now()),
-                "niter_list": [int(r[9]) for r in results],
-                "Uinf_low": float(self.copt.Uinf_low)
-                if self.copt.Uinf_low is not None
-                else None,
-                "Uinf_high": float(self.copt.Uinf_high)
-                if self.copt.Uinf_high is not None
-                else None,
-                "Uinf_switch": float(self.copt.Uinf_switch)
-                if self.copt.Uinf_switch is not None
-                else None,
-            },
+            "runs": {},
         }
+        for run_name, run_config in runs.items():
+            if run_config["type"] == "optimal":
+                results = self.copt.optimize_all()
+                blade_data = self.copt.compute_bladeloads(results)
+                # Prepare output dict
+                output = {
+                    "uinf": [r[0] for r in results],
+                    "zone": [r[1] for r in results],
+                    "omega": [r[2] for r in results],
+                    "pitch": [r[3] for r in results],
+                    "P": [r[4] for r in results],
+                    "T": [r[5] for r in results],
+                    "CT": [r[6] for r in results],
+                    "CP": [r[7] for r in results],
+                    "Mb": [r[8] for r in results],
+                    "niter": [r[9] for r in results],
+                }
+                # Add TSR
+                output["tsr"] = [
+                    (omega * 2 * np.pi / 60) * self.rtip / uinf
+                    for omega, uinf in zip(output["omega"], output["uinf"])
+                ]
+                # Add tip speed
+                output["tip_speed"] = [
+                    omega * 2 * np.pi / 60 * self.rtip for omega in output["omega"]
+                ]
+                run_data = {
+                    "performance": output,
+                    "blade_loads": blade_data,
+                    "metadata": {
+                        "timestamp": str(pd.Timestamp.now()),
+                        "niter_list": [int(r[9]) for r in results],
+                        "Uinf_low": float(self.copt.Uinf_low)
+                        if self.copt.Uinf_low is not None
+                        else None,
+                        "Uinf_high": float(self.copt.Uinf_high)
+                        if self.copt.Uinf_high is not None
+                        else None,
+                        "Uinf_switch": float(self.copt.Uinf_switch)
+                        if self.copt.Uinf_switch is not None
+                        else None,
+                    },
+                }
+            elif run_config["type"] == "fixed_setpoints":
+                setpoints = run_config["setpoints"]
+                operation = [
+                    {"uinf": s["wind_speed"], "omega": s["rpm"], "pitch": s["pitch"]}
+                    for s in setpoints
+                ]
+                fixed_run = FixedRun(self.rotor, operation, self.rtip)
+                results = fixed_run.run()
+                blade_data = fixed_run.compute_bladeloads(results)
+                # Prepare output dict
+                output = {
+                    "uinf": [r[0] for r in results],
+                    "zone": [r[1] for r in results],
+                    "omega": [r[2] for r in results],
+                    "pitch": [r[3] for r in results],
+                    "P": [r[4] for r in results],
+                    "T": [r[5] for r in results],
+                    "CT": [r[6] for r in results],
+                    "CP": [r[7] for r in results],
+                    "Mb": [r[8] for r in results],
+                    "niter": [r[9] for r in results],
+                }
+                # Add TSR
+                output["tsr"] = [
+                    (omega * 2 * np.pi / 60) * self.rtip / uinf
+                    for omega, uinf in zip(output["omega"], output["uinf"])
+                ]
+                # Add tip speed
+                output["tip_speed"] = [
+                    omega * 2 * np.pi / 60 * self.rtip for omega in output["omega"]
+                ]
+                run_data = {
+                    "performance": output,
+                    "blade_loads": blade_data,
+                    "metadata": {
+                        "timestamp": str(pd.Timestamp.now()),
+                        "niter_list": [int(r[9]) for r in results],
+                    },
+                }
+            else:
+                raise ValueError(f"Unknown run type: {run_config['type']}")
+            results_data["runs"][run_name] = run_data
 
         # Convert to serializable
         results_data = convert_to_serializable(results_data)

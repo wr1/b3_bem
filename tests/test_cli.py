@@ -36,5 +36,5 @@ def test_plot_b3bem_callback():
         mock_plotter_instance = Mock()
         mock_plotter.return_value = mock_plotter_instance
         plot_b3bem_callback(Path("results.json"), Path("output"))
-        mock_plotter.assert_called_once_with(Path("results.json"))
+        mock_plotter.assert_called_once_with(Path("results.json"), run_name=None)
         mock_plotter_instance.plot_all.assert_called_once_with(Path("output"))
