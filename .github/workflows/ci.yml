@@ -21,12 +21,12 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ninja-build
+        sudo apt-get install -y ninja-build gfortran
 
     - name: Run ruff check
       run: |
         pip install ruff
-        ruff check --fix --unsafe-fixes . 
+        ruff check src/ tests/ pyproject.toml README.md examples/ resources/
 
     - name: Install CCBlade
       run: |
