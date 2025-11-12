@@ -211,7 +211,9 @@ def test_process_Uinf():
         None,
     )
     rotor.r = np.linspace(0, 60, 50)
-    optimizer = ControlOptimize(rotor, 95, 60, 1e7, np.array([2, 6, 12, 20]), Path("/tmp"))
+    optimizer = ControlOptimize(
+        rotor, 95, 60, 1e7, np.array([2, 6, 12, 20]), Path("/tmp")
+    )
     optimizer.initialize_optimal()
     result_low = optimizer.process_Uinf(2)
     assert result_low[1] == "low"

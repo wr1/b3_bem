@@ -55,13 +55,41 @@ config = {
     "bem": {
         "rated_power": 10000000,
         "polars": [
-            {"key": 1.0, "name": "Cylinder", "file": str(Path(__file__).parent / "polars" / "Cylinder1.dat")},
-            {"key": 0.21, "name": "DU21", "file": str(Path(__file__).parent / "polars" / "DU21_A17.dat")},
-            {"key": 0.25, "name": "DU25", "file": str(Path(__file__).parent / "polars" / "DU25_A17.dat")},
-            {"key": 0.30, "name": "DU30", "file": str(Path(__file__).parent / "polars" / "DU30_A17.dat")},
-            {"key": 0.35, "name": "DU35", "file": str(Path(__file__).parent / "polars" / "DU35_A17.dat")},
-            {"key": 0.40, "name": "DU40", "file": str(Path(__file__).parent / "polars" / "DU40_A17.dat")},
-            {"key": 0.17, "name": "NACA64", "file": str(Path(__file__).parent / "polars" / "NACA64_A17.dat")},
+            {
+                "key": 1.0,
+                "name": "Cylinder",
+                "file": str(Path(__file__).parent / "polars" / "Cylinder1.dat"),
+            },
+            {
+                "key": 0.21,
+                "name": "DU21",
+                "file": str(Path(__file__).parent / "polars" / "DU21_A17.dat"),
+            },
+            {
+                "key": 0.25,
+                "name": "DU25",
+                "file": str(Path(__file__).parent / "polars" / "DU25_A17.dat"),
+            },
+            {
+                "key": 0.30,
+                "name": "DU30",
+                "file": str(Path(__file__).parent / "polars" / "DU30_A17.dat"),
+            },
+            {
+                "key": 0.35,
+                "name": "DU35",
+                "file": str(Path(__file__).parent / "polars" / "DU35_A17.dat"),
+            },
+            {
+                "key": 0.40,
+                "name": "DU40",
+                "file": str(Path(__file__).parent / "polars" / "DU40_A17.dat"),
+            },
+            {
+                "key": 0.17,
+                "name": "NACA64",
+                "file": str(Path(__file__).parent / "polars" / "NACA64_A17.dat"),
+            },
         ],
         "B": 3,
         "rho": 1.225,
