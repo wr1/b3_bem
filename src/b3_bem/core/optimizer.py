@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import numpy as np
-import pandas as pd
 from scipy.optimize import minimize, brentq
 import multiprocessing as mp
 from ccblade.ccblade import CCBlade
@@ -12,10 +11,13 @@ from contextlib import redirect_stdout, redirect_stderr
 from rich.progress import Progress
 from scipy.integrate import trapezoid
 
+<<<<<<< HEAD
 from ..plots.bladeloads import (
     plot_bladeloads,
     plot_moments,
 )
+=======
+>>>>>>> 79a235f9b9d6b6a5762209cab47e830c0b31cd81
 
 logger = logging.getLogger(__name__)
 
@@ -57,14 +59,24 @@ class ControlOptimize:
         initial_guess_pitch = [self.pitch_opt]
 
         def obj(pitch):
-            with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
+            with (
+                redirect_stdout(open(os.devnull, "w")),
+                redirect_stderr(open(os.devnull, "w")),
+            ):
                 outputs, _ = self.rotor.evaluate([Uinf], [Omega], [pitch])
             return -outputs["P"][0]
 
-        res = minimize(obj, initial_guess_pitch, bounds=[(self.pitch_min, self.pitch_max)])
+        res = minimize(
+            obj, initial_guess_pitch, bounds=[(self.pitch_min, self.pitch_max)]
+        )
         pitch_opt_res = res.x[0]
-        with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
-            outputs, _ = self.rotor.evaluate([Uinf], [Omega], [pitch_opt_res], coefficients=True)
+        with (
+            redirect_stdout(open(os.devnull, "w")),
+            redirect_stderr(open(os.devnull, "w")),
+        ):
+            outputs, _ = self.rotor.evaluate(
+                [Uinf], [Omega], [pitch_opt_res], coefficients=True
+            )
         P = outputs["P"][0]
         T = outputs["T"][0]
         CT = outputs["CT"][0]
@@ -79,13 +91,23 @@ class ControlOptimize:
 
         def obj(x):
             Omega, pitch = x
-            with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
+            with (
+                redirect_stdout(open(os.devnull, "w")),
+                redirect_stderr(open(os.devnull, "w")),
+            ):
                 outputs, _ = self.rotor.evaluate([Uinf], [Omega], [pitch])
             return -outputs["P"][0]
 
-        res = minimize(obj, initial_guess, bounds=[(self.omega_min, self.omega_max), (self.pitch_min, self.pitch_max)])
+        res = minimize(
+            obj,
+            initial_guess,
+            bounds=[(self.omega_min, self.omega_max), (self.pitch_min, self.pitch_max)],
+        )
         Omega_opt_res, pitch_opt_res = res.x
-        with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
+        with (
+            redirect_stdout(open(os.devnull, "w")),
+            redirect_stderr(open(os.devnull, "w")),
+        ):
             outputs, _ = self.rotor.evaluate(
                 [Uinf], [Omega_opt_res], [pitch_opt_res], coefficients=True
             )
@@ -102,14 +124,24 @@ class ControlOptimize:
         initial_guess_pitch = [self.pitch_opt]
 
         def obj(pitch):
-            with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
+            with (
+                redirect_stdout(open(os.devnull, "w")),
+                redirect_stderr(open(os.devnull, "w")),
+            ):
                 outputs, _ = self.rotor.evaluate([Uinf], [Omega], [pitch])
             return -outputs["P"][0]
 
-        res = minimize(obj, initial_guess_pitch, bounds=[(self.pitch_min, self.pitch_max)])
+        res = minimize(
+            obj, initial_guess_pitch, bounds=[(self.pitch_min, self.pitch_max)]
+        )
         pitch_opt_res = res.x[0]
-        with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
-            outputs, _ = self.rotor.evaluate([Uinf], [Omega], [pitch_opt_res], coefficients=True)
+        with (
+            redirect_stdout(open(os.devnull, "w")),
+            redirect_stderr(open(os.devnull, "w")),
+        ):
+            outputs, _ = self.rotor.evaluate(
+                [Uinf], [Omega], [pitch_opt_res], coefficients=True
+            )
         P = outputs["P"][0]
         T = outputs["T"][0]
         CT = outputs["CT"][0]
@@ -123,25 +155,40 @@ class ControlOptimize:
         initial_guess_pitch = [self.pitch_opt]
 
         def func(pitch):
-            with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
+            with (
+                redirect_stdout(open(os.devnull, "w")),
+                redirect_stderr(open(os.devnull, "w")),
+            ):
                 outputs, _ = self.rotor.evaluate([Uinf], [Omega], [pitch])
             return outputs["P"][0] - self.rating
 
         try:
-            pitch_opt_res, r = brentq(func, self.pitch_min, self.pitch_max, full_output=True)
+            pitch_opt_res, r = brentq(
+                func, self.pitch_min, self.pitch_max, full_output=True
+            )
             niter = r.iterations
         except ValueError:
             # If rating not reached, maximize P instead
             def obj(pitch):
-                with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
+                with (
+                    redirect_stdout(open(os.devnull, "w")),
+                    redirect_stderr(open(os.devnull, "w")),
+                ):
                     outputs, _ = self.rotor.evaluate([Uinf], [Omega], [pitch])
                 return -outputs["P"][0]
 
-            res = minimize(obj, initial_guess_pitch, bounds=[(self.pitch_min, self.pitch_max)])
+            res = minimize(
+                obj, initial_guess_pitch, bounds=[(self.pitch_min, self.pitch_max)]
+            )
             pitch_opt_res = res.x[0]
             niter = res.nfev
-        with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
-            outputs, _ = self.rotor.evaluate([Uinf], [Omega], [pitch_opt_res], coefficients=True)
+        with (
+            redirect_stdout(open(os.devnull, "w")),
+            redirect_stderr(open(os.devnull, "w")),
+        ):
+            outputs, _ = self.rotor.evaluate(
+                [Uinf], [Omega], [pitch_opt_res], coefficients=True
+            )
         P = outputs["P"][0]
         T = outputs["T"][0]
         CT = outputs["CT"][0]
@@ -162,12 +209,19 @@ class ControlOptimize:
 
         # Find Uinf_switch
         def P_at_max_omega_pitch0(Uinf):
-            with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
-                outputs, _ = self.rotor.evaluate([Uinf], [self.omega_max], [0], coefficients=True)
+            with (
+                redirect_stdout(open(os.devnull, "w")),
+                redirect_stderr(open(os.devnull, "w")),
+            ):
+                outputs, _ = self.rotor.evaluate(
+                    [Uinf], [self.omega_max], [0], coefficients=True
+                )
             return outputs["P"][0] - self.rating
 
         try:
-            self.Uinf_switch, _ = brentq(P_at_max_omega_pitch0, self.Uinf_high, max(self.uinf), full_output=True)
+            self.Uinf_switch, _ = brentq(
+                P_at_max_omega_pitch0, self.Uinf_high, max(self.uinf), full_output=True
+            )
         except ValueError:
             self.Uinf_switch = max(self.uinf)
 
@@ -181,8 +235,13 @@ class ControlOptimize:
             Omega, pitch, P, T, CT, CP, Mb, niter = self.optimize_mid(Uinf)
         else:
             # Check if P at omega_max with pitch=0 > rating
-            with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
-                outputs, _ = self.rotor.evaluate([Uinf], [self.omega_max], [0], coefficients=True)
+            with (
+                redirect_stdout(open(os.devnull, "w")),
+                redirect_stderr(open(os.devnull, "w")),
+            ):
+                outputs, _ = self.rotor.evaluate(
+                    [Uinf], [self.omega_max], [0], coefficients=True
+                )
             if outputs["P"][0] > self.rating:
                 zone = "high"
                 Omega, pitch, P, T, CT, CP, Mb, niter = self.optimize_high(Uinf)
@@ -198,7 +257,9 @@ class ControlOptimize:
             results = [self.process_Uinf(u) for u in self.uinf]
         else:
             with Progress() as progress:
-                task = progress.add_task("Optimizing operating points...", total=len(self.uinf))
+                task = progress.add_task(
+                    "Optimizing operating points...", total=len(self.uinf)
+                )
                 results = []
                 with mp.Pool() as pool:
                     for result in pool.imap(self.process_Uinf, self.uinf):
@@ -214,24 +275,38 @@ class ControlOptimize:
         edgewise_moments = []
         r = self.rotor.r
         for uinf, _, omega, pitch, _, _, _, _, _, _ in results:
-            with redirect_stdout(open(os.devnull, "w")), redirect_stderr(open(os.devnull, "w")):
+            with (
+                redirect_stdout(open(os.devnull, "w")),
+                redirect_stderr(open(os.devnull, "w")),
+            ):
                 loads, _ = self.rotor.distributedAeroLoads(uinf, omega, pitch, 0)
             loads_list.append(loads)
             uinf_list.append(uinf)
             # Compute moments
+<<<<<<< HEAD
             Np = loads['Np']
             Tp = loads['Tp']
             moment_flap = trapezoid(Np * r, r)
             moment_edge = trapezoid(Tp * r, r)
+=======
+            Np = loads["Np"]
+            Tp = loads["Tp"]
+            moment_flap = np.trapezoid(Np * r, r)
+            moment_edge = np.trapezoid(Tp * r, r)
+>>>>>>> 79a235f9b9d6b6a5762209cab47e830c0b31cd81
             flapwise_moments.append(moment_flap)
             edgewise_moments.append(moment_edge)
-        combined_rms = np.sqrt(np.array(flapwise_moments)**2 + np.array(edgewise_moments)**2)
+        combined_rms = np.sqrt(
+            np.array(flapwise_moments) ** 2 + np.array(edgewise_moments) ** 2
+        )
         blade_data = {
-            'r': r.tolist(),
-            'loads_list': [{k: v.tolist() for k, v in load.items()} for load in loads_list],
-            'uinf_list': uinf_list,
-            'flapwise_moments': [float(m) for m in flapwise_moments],
-            'edgewise_moments': [float(m) for m in edgewise_moments],
-            'combined_rms': combined_rms.tolist()
+            "r": r.tolist(),
+            "loads_list": [
+                {k: v.tolist() for k, v in load.items()} for load in loads_list
+            ],
+            "uinf_list": uinf_list,
+            "flapwise_moments": [float(m) for m in flapwise_moments],
+            "edgewise_moments": [float(m) for m in edgewise_moments],
+            "combined_rms": combined_rms.tolist(),
         }
         return blade_data

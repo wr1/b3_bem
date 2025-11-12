@@ -1,7 +1,7 @@
 from pathlib import Path
 from ruamel.yaml import YAML
 from pydantic import BaseModel
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 
 class Config(BaseModel):
@@ -21,5 +21,5 @@ def yaml_make_portable(path: Path):
 
 def save_yaml(path: Path, config):
     yaml = YAML()
-    with open(path, 'w') as f:
+    with open(path, "w") as f:
         yaml.dump(config.model_dump(), f)

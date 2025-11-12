@@ -70,7 +70,12 @@ def interpolate_polars(
         for i in reversed(range(len(tnew)))
     ]
     if of:
+<<<<<<< HEAD
         from b3_bem.plots import plot_polars, plot_interpolated_polars
+=======
+        from ..plots.plots import plot_polars, plot_interpolated_polars
+
+>>>>>>> 79a235f9b9d6b6a5762209cab47e830c0b31cd81
         plot_polars(polars, of=of.with_name(of.stem + "_in" + of.suffix))
         plot_interpolated_polars(tnew, data, of=of)
     return output_polars

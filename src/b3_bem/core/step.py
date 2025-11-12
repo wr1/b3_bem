@@ -5,31 +5,18 @@ import logging
 from pathlib import Path
 from .runner import B3BemRun
 from ..cli.yml_portable import yaml_make_portable
-from statesman.core.base import Statesman
 
 logger = logging.getLogger(__name__)
 
 
-class B3BemStep(Statesman):
-    """Statesman step for running B3 BEM analysis."""
-
-    dependent_sections = ["general", "planform", "bem"]
-    output_files = [
-        "results.json",
-    ]
-    workdir_key = "workdir"
+class B3BemStep:
+    """Step for running B3 BEM analysis."""
 
     def __init__(self, config_path, force=False):
-        super().__init__(config_path)
+        self.config_path = config_path
         self.force = force
 
     def run(self):
-        if self.force:
-            self._execute()
-        else:
-            super().run()
-
-    def _execute(self):
         """Execute the B3 BEM analysis step."""
         # Load config using custom loader
         config_data = yaml_make_portable(Path(self.config_path))
