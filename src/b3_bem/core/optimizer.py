@@ -11,13 +11,10 @@ from contextlib import redirect_stdout, redirect_stderr
 from rich.progress import Progress
 from scipy.integrate import trapezoid
 
-<<<<<<< HEAD
 from ..plots.bladeloads import (
     plot_bladeloads,
     plot_moments,
 )
-=======
->>>>>>> 79a235f9b9d6b6a5762209cab47e830c0b31cd81
 
 logger = logging.getLogger(__name__)
 
@@ -283,17 +280,10 @@ class ControlOptimize:
             loads_list.append(loads)
             uinf_list.append(uinf)
             # Compute moments
-<<<<<<< HEAD
-            Np = loads['Np']
-            Tp = loads['Tp']
-            moment_flap = trapezoid(Np * r, r)
-            moment_edge = trapezoid(Tp * r, r)
-=======
             Np = loads["Np"]
             Tp = loads["Tp"]
             moment_flap = np.trapezoid(Np * r, r)
             moment_edge = np.trapezoid(Tp * r, r)
->>>>>>> 79a235f9b9d6b6a5762209cab47e830c0b31cd81
             flapwise_moments.append(moment_flap)
             edgewise_moments.append(moment_edge)
         combined_rms = np.sqrt(

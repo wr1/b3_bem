@@ -102,9 +102,6 @@ class B3BemRun:
         }
 
         # Plot planform
-<<<<<<< HEAD
-        plot_planform(r, chord, twist, relative_thickness, self.workdir / "ccblade_planform.png", control_points)
-=======
         plot_planform(
             r,
             chord,
@@ -113,7 +110,6 @@ class B3BemRun:
             self.workdir.parent / "ccblade_planform.png",
             control_points,
         )
->>>>>>> 79a235f9b9d6b6a5762209cab47e830c0b31cd81
 
         if bem["polars"] is None:
             exit("no polars in blade file")
