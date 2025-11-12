@@ -1,7 +1,5 @@
 # Fixed run handler for b3_bem.
-from pathlib import Path
 import numpy as np
-import pandas as pd
 from ccblade.ccblade import CCBlade
 import os
 import logging
@@ -39,9 +37,7 @@ class FixedRun:
             results.append(
                 (op["uinf"], "fixed", op["omega"], op["pitch"], P, T, CT, CP, Mb, 1)
             )
-        logger.info(
-            f"Fixed run completed with {len(results)} operating points"
-        )
+        logger.info(f"Fixed run completed with {len(results)} operating points")
         return results
 
     def compute_bladeloads(self, results: List[tuple]) -> Dict[str, Any]:

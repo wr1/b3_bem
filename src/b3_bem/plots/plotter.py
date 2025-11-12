@@ -22,14 +22,18 @@ class B3BemPlotter:
             self.run_data = self.data
         # Convert lists back to arrays
         self.run_data["planform"]["r"] = np.array(self.run_data["planform"]["r"])
-        self.run_data["planform"]["chord"] = np.array(self.run_data["planform"]["chord"])
+        self.run_data["planform"]["chord"] = np.array(
+            self.run_data["planform"]["chord"]
+        )
         self.run_data["planform"]["twist"] = np.array(
             self.run_data["planform"]["twist"]
         )
         self.run_data["planform"]["thickness"] = np.array(
             self.run_data["planform"]["thickness"]
         )
-        self.run_data["performance"]["uinf"] = np.array(self.run_data["performance"]["uinf"])
+        self.run_data["performance"]["uinf"] = np.array(
+            self.run_data["performance"]["uinf"]
+        )
         self.run_data["blade_loads"]["r"] = np.array(self.run_data["blade_loads"]["r"])
         self.run_data["blade_loads"]["combined_rms"] = np.array(
             self.run_data["blade_loads"]["combined_rms"]

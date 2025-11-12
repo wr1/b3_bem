@@ -58,7 +58,8 @@ b3bem_cli.commands.append(
                 arg_type=bool,
                 default=False,
                 help="Force run despite statesman",
-            ),           option(
+            ),
+            option(
                 flags=["--plot", "-p"],
                 arg_type=bool,
                 default=False,
