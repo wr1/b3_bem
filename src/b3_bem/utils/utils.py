@@ -2,11 +2,10 @@
 
 from pathlib import Path
 import numpy as np
-import pandas as pd
 from ccblade.ccblade import CCAirfoil
 import os
 import logging
-from typing import List, Tuple, Dict, Optional, Any
+from typing import List, Tuple, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -72,31 +71,7 @@ def interpolate_polars(
     ]
     if of:
         from ..plots.plots import plot_polars, plot_interpolated_polars
+
         plot_polars(polars, of=of.with_name(of.stem + "_in" + of.suffix))
         plot_interpolated_polars(tnew, data, of=of)
     return output_polars
-
-
-def tsr2omega(
-    tsr: float, uinf: float, radius: float, max_tip_speed: float = 95.0
-) -> float:
-    """Convert tip speed ratio to rotor speed in RPM."""
-    ts = np.minimum(uinf * tsr, max_tip_speed)
-    return (ts * 60.0) / (2.0 * np.pi * radius)
-
-
-def omega2tsr(omega: float, uinf: float, radius: float) -> float:
-    """Convert rotor speed to tip speed ratio."""
-    return omega * 2.0 * np.pi * radius / (uinf * 60.0)
-
-
-def find_closest_x(
-    x_values: np.ndarray, evaluations: np.ndarray, target: float, order: int
-) -> float:
-    """Find closest x value to target using polynomial interpolation."""
-    assert len(x_values) == len(evaluations)
-    poly_coeffs = np.polyfit(x_values, evaluations, order)
-    poly = np.poly1d(poly_coeffs)
-    x_dense = np.linspace(x_values[0], x_values[-1], 10000)
-    x_closest = x_dense[np.argmin(np.abs(poly(x_dense) - target))]
-    return x_closest
