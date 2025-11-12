@@ -32,17 +32,18 @@ def convert_to_serializable(obj):
 class B3BemRun:
     """Run B3 BEM analysis on a blade."""
 
-    def __init__(self, config: dict, yml_dir: Path):
+    def __init__(self, config: dict, yml_dir: Path, runname: str):
         """Initialize with a config dict and YAML directory."""
         self.config = config
         self.yml_dir = yml_dir
+        self.runname = runname
 
-        # Resolve workdir relative to YAML directory
+        # Resolve workdir relative to YAML directory with runname
         workdir_path = Path(self.config["workdir"])
         if not workdir_path.is_absolute():
-            workdir_path = self.yml_dir / workdir_path
-        self.workdir = workdir_path.resolve() / "mesh"
-        self.workdir.mkdir(parents=True, exist_ok=True)  # Ensure mesh directory exists
+            workdir_path = self.yml_dir / workdir_path / self.runname
+        self.workdir = workdir_path.resolve()
+        self.workdir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
 
         bem = self.config["bem"]
         planform = self.config["geometry"]["planform"]
@@ -101,7 +102,7 @@ class B3BemRun:
         }
 
         # Plot planform
-        plot_planform(r, chord, twist, relative_thickness, self.workdir.parent / "ccblade_planform.png", control_points)
+        plot_planform(r, chord, twist, relative_thickness, self.workdir / "ccblade_planform.png", control_points)
 
         if bem["polars"] is None:
             exit("no polars in blade file")
@@ -110,7 +111,7 @@ class B3BemRun:
             reverse=True,
         )
         iplr = interpolate_polars(
-            plrs, relative_thickness, of=self.workdir.parent / "polars.png"
+            plrs, relative_thickness, of=self.workdir / "polars.png"
         )
         self.rotor = CCBlade(
             r - r[0],
@@ -181,7 +182,7 @@ class B3BemRun:
         results_data = convert_to_serializable(results_data)
         
         # Save to JSON
-        output_path = self.workdir.parent / "results.json"
+        output_path = self.workdir / "results.json"
         with open(output_path, "w") as f:
             json.dump(results_data, f, indent=4)
         logger.info(f"Saved results to {output_path}")

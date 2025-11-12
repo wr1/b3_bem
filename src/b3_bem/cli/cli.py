@@ -18,9 +18,10 @@ def run_b3bem_callback(yml: Path, force: bool = False, plot: bool = False):
     step = B3BemStep(str(yml), force=force)
     step.run()
     if plot:
-        results_path = Path(yml).parent / step.config["workdir"] / "results.json"
+        runname = yml.stem
+        results_path = Path(yml).parent / step.config["workdir"] / runname / "results.json"
         plotter = B3BemPlotter(results_path)
-        plotter.plot_all(Path(yml).parent / step.config["workdir"])
+        plotter.plot_all(Path(yml).parent / step.config["workdir"] / runname)
         logging.info("Plots generated.")
 
 
@@ -50,7 +51,7 @@ b3bem_cli.commands.append(
                 arg_type=Path,
                 required=True,
                 help="Path to YAML config file",
-            ),
+            ),            
             option(
                 flags=["--force", "-f"],
                 arg_type=bool,

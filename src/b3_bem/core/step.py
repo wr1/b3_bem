@@ -35,11 +35,12 @@ class B3BemStep(Statesman):
         config_data = yaml_make_portable(Path(self.config_path))
         self.config = config_data.model_dump()
 
-        # Set workdir relative to YAML file
-        self.workdir = Path(self.config_path).parent / self.config["workdir"]
+        # Set workdir relative to YAML file with runname
+        runname = Path(self.config_path).stem
+        self.workdir = Path(self.config_path).parent / self.config["workdir"] / runname
         self.workdir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
 
         # Run B3 BEM analysis
-        ccblade = B3BemRun(self.config, Path(self.config_path).parent)
+        ccblade = B3BemRun(self.config, Path(self.config_path).parent, runname)
         ccblade.run()
         logger.info(f"B3 BEM analysis completed and saved to {self.workdir}")
