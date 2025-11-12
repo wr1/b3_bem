@@ -7,32 +7,16 @@ allow-direct-references = true
 
 [project]
 dependencies = [
-<<<<<<< HEAD
   "numpy",
   "pandas",
   "matplotlib",
   "scipy",
   "CCBlade", # "ccblade @ file:///home/wr1/projects/CCBlade",
   "rich", # "statesman",
-  "statesman", # @ git+https://github.com/wr1/projects/statesman.git",
   "treeparse",
   "ruamel.yaml",
   "pydantic",
   "pytest",
-=======
-    "numpy",
-    "pandas",
-    "matplotlib",
-    "scipy",
-    "CCBlade",
-    # "ccblade @ file:///home/wr1/projects/CCBlade",
-    "rich",
-    # "statesman",
-    "treeparse",
-    "ruamel.yaml",
-    "pydantic",
-    "pytest",
->>>>>>> 79a235f9b9d6b6a5762209cab47e830c0b31cd81
 ]
 name = "b3_bem"
 version = "0.1.1"
