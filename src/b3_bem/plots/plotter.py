@@ -20,17 +20,14 @@ class B3BemPlotter:
         else:
             # Backward compatibility
             self.run_data = self.data
+        # Convert planform to arrays
+        self.planform = self.data.get("planform", {})
+        if self.planform:
+            self.planform["r"] = np.array(self.planform["r"])
+            self.planform["chord"] = np.array(self.planform["chord"])
+            self.planform["twist"] = np.array(self.planform["twist"])
+            self.planform["thickness"] = np.array(self.planform["thickness"])
         # Convert lists back to arrays
-        self.run_data["planform"]["r"] = np.array(self.run_data["planform"]["r"])
-        self.run_data["planform"]["chord"] = np.array(
-            self.run_data["planform"]["chord"]
-        )
-        self.run_data["planform"]["twist"] = np.array(
-            self.run_data["planform"]["twist"]
-        )
-        self.run_data["planform"]["thickness"] = np.array(
-            self.run_data["planform"]["thickness"]
-        )
         self.run_data["performance"]["uinf"] = np.array(
             self.run_data["performance"]["uinf"]
         )
@@ -46,7 +43,7 @@ class B3BemPlotter:
 
     def plot_planform(self, of: Path = Path("ccblade_planform.png")):
         """Plot planform."""
-        pf = self.run_data["planform"]
+        pf = self.planform
         plot_planform(pf["r"], pf["chord"], pf["twist"], pf["thickness"], of)
 
     def plot_rotor_performance(self, of: Path = Path("ccblade_out.png")):
