@@ -1,3 +1,4 @@
+[![Test](https://github.com/wr1/b3_bem/actions/workflows/ci.yml/badge.svg)](https://github.com/wr1/b3_bem/actions/workflows/ci.yml)![Version](https://img.shields.io/github/v/release/wr1/b3_bem)
 # B3 BEM
 
 A wrapper around CCBlade for Blade Element Momentum (BEM) analysis of wind turbine rotors.
