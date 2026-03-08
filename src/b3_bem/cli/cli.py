@@ -57,7 +57,7 @@ b3bem_cli.commands.append(
                 flags=["--force", "-f"],
                 arg_type=bool,
                 default=False,
-                help="Force run despite statesman",
+                help="Force run despite b3_state",
             ),
             option(
                 flags=["--plot", "-p"],

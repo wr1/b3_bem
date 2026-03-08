@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Statesman step for running B3 BEM analysis."""
+"""b3_state step for running B3 BEM analysis."""
 
 import logging
 from pathlib import Path
